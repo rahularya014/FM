@@ -1,0 +1,199 @@
+Function bond_price(face_value, coupon_rate, maturity, yield_to_maturity)
+bond_price = 0
+For i = 1 To maturity
+bond_price = bond_price + (face_value * coupon_rate) / (1 + yield_to_maturity) ^ i
+Next i
+ 'BP = 0
+ 'For i = 1
+ 'B.P = 0+(1000x0.10)/(1.08)^1 = 92.59
+ 'i = 2
+
+bond_price = bond_price + face_value / (1 + yield_to_maturity) ^ maturity
+
+End Function
+
+Function coupon_rate(face_value, bond_price, maturity, yield_to_maturity)
+
+coupon_rate = ((bond_price / face_value) - ((1 + yield_to_maturity) ^ -maturity)) * ((yield_to_maturity) * (1 / (1 - (1 + yield_to_maturity) ^ -maturity)))
+
+
+End Function
+
+Function bond_yield(face_value, bond_price, maturity, coupon_rate)
+Dim cashflows(20) As Double
+cashflows(0) = -bond_price
+For i = 1 To maturity
+cashflows(i) = face_value * coupon_rate
+Next i
+ 
+cashflows(maturity) = cashflows(maturity) + face_value
+bond_yield = Application.WorksheetFunction.IRR(cashflows)
+End Function
+Function bond_duration(face_value, coupon_rate, maturity, yield_to_maturity)
+
+Price = bond_price(face_value, coupon_rate, maturity, yield_to_maturity)
+
+bond_duration = 0
+
+For i = 1 To maturity
+
+bond_duration = bond_duration + i * face_value * coupon_rate / (1 + yield_to_maturity) ^ i
+Next i
+
+bond_duration = bond_duration + face_value * maturity / (1 + yield_to_maturity) ^ maturity
+
+bond_duration = bond_duration / Price
+
+End Function
+
+Function bond_convexity(face_value, coupon_rate, maturity, yield_to_maturity)
+Price = bond_price(face_value, coupon_rate, maturity, yield_to_maturity)
+For i = 1 To maturity
+bond_convexity = bond_convexity + face_value * coupon_rate * i * (1 + i) / (1 + yield_to_maturity) ^ i
+Next i
+bond_convexity = bond_convexity + face_value * maturity * (1 + maturity) / (1 + yield_to_maturity) ^ maturity
+bond_convexity = bond_convexity / (Price * (1 + yield_to_maturity) ^ 2)
+End Function
+
+
+########################################################################################################################################################################################
+
+Function bond_price(face_value, coupon_rate, maturity, yield_to_maturity)
+bond_price = 0
+For i = 1 To maturity
+bond_price = bond_price + (face_value * coupon_rate) / (1 + yield_to_maturity) ^ i
+Next i
+bond_price = bond_price + face_value / (1 + yield_to_maturity) ^ maturity
+End Function
+
+
+Sub bond_duration_macro_old()
+
+Dim face_value As Double
+Dim yield As Double
+Dim coupon As Double
+Dim maturity As Double
+
+face_value = InputBox("write the face value")
+yield = InputBox("write the yield rate")
+coupon = InputBox("write the coupon rate")
+maturity = InputBox("write the maturity period")
+
+sum_price = 0
+sum_duration = 0
+For i = 1 To maturity
+If i = maturity Then
+sum_price = sum_price + face_value * (1 + coupon) / (1 + yield) ^ i
+sum_duration = sum_duration + face_value * (1 + coupon) * i / (1 + yield) ^ i
+
+Else
+sum_price = sum_price + face_value * coupon / (1 + yield) ^ i
+sum_duration = sum_duration + face_value * coupon * i / (1 + yield) ^ i
+End If
+Next i
+
+Duration = sum_duration / sum_price
+MsgBox ("THE DURATION OF THE BOND IS " & Format(Duration, "###.###"))
+' # is for the refreance for the no.
+
+
+
+End Sub
+
+Sub bond_duration_macro()
+
+Dim face_value As Double
+Dim yield As Double
+Dim coupon As Double
+Dim maturity As Double
+
+face_value = 100
+
+Application.Goto reference:="R2C2"
+ActiveCell.Select
+coupon = ActiveCell.Value
+ActiveCell.Offset(1, 0).Select
+ActiveCell.Select
+yield = ActiveCell.Value
+ActiveCell.Offset(1, 0).Select
+ActiveCell.Select
+maturity = ActiveCell.Value
+
+sum_price = 0
+sum_duration = 0
+For i = 1 To maturity
+If i = maturity Then
+sum_price = sum_price + face_value * (1 + coupon) / (1 + yield) ^ i
+sum_duration = sum_duration + face_value * (1 + coupon) * i / (1 + yield) ^ i
+
+Else
+sum_price = sum_price + face_value * coupon / (1 + yield) ^ i
+sum_duration = sum_duration + face_value * coupon * i / (1 + yield) ^ i
+End If
+Next i
+
+sub_Duration = sum_duration / sum_price
+sub_Duration = Format(sub_Duration, "###.###")
+
+Application.Goto reference:="R6C2"
+
+ActiveCell.Select
+
+ActiveCell.Value = sub_Duration
+' # is for the refreance for the no.
+
+
+
+End Sub
+
+
+Sub bond_convexity_macro()
+Dim maturity As Double
+Dim yield As Double
+Dim coupon As Double
+face_value = 100
+Application.Goto reference:="R2C2"
+ActiveCell.Select
+coupon = ActiveCell.Value
+' if i eant jump cell there is a fn which is offset
+' 1,0 => row jump
+' 0,1 => column jump
+ActiveCell.Offset(1, 0).Select
+ActiveCell.Select
+yield = ActiveCell.Value
+ActiveCell.Offset(1, 0).Select
+ActiveCell.Select
+maturity = ActiveCell.Value
+
+sum_price = 0
+sum_convexity = 0
+For i = 1 To maturity
+If i = maturity Then
+sum_price = sum_price + face_value * (1 + coupon) / (1 + yield) ^ i
+sum_convexity = sum_convexity + face_value * (1 + coupon) * i * (1 + i) / (1 + yield) ^ i
+
+Else
+
+sum_price = sum_price + face_value * coupon / (1 + yield) ^ i
+
+sum_convexity = sum_convexity + face_value * coupon * i * (1 + i) / (1 + yield) ^ i
+
+End If
+Next i
+
+convexity = sum_convexity / (sum_price * (1 + yield) ^ 2)
+
+convexity = Format(convexity, "###.###")
+
+Application.Goto reference:="R10C2"
+
+ActiveCell.Select
+
+ActiveCell.Value = convexity
+End Sub
+
+
+'modified Duration =  =-1/(1+yeild to maturity)*bond duration
+
+'Percentage change in price = =(-modified Duration*change in yield)+0.5*convexity of the bond*(change in yield^2)
+'New price= modified Duration*change in yield+convexity of the bond*(change in yield^2)

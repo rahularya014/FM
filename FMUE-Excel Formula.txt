@@ -197,3 +197,27 @@ End Sub
 
 'Percentage change in price = =(-modified Duration*change in yield)+0.5*convexity of the bond*(change in yield^2)
 'New price= modified Duration*change in yield+convexity of the bond*(change in yield^2)
+
+Sub bond_convexity_macro()
+Dim face_value As Double
+Dim yield As Double
+Dim coupon As Double
+Dim maturity As Double
+face_value = InputBox("write the face value")
+yield = InputBox("write the yield rate")
+coupon = InputBox("write the coupon")
+maturity = InputBox("write the maturity period")
+sum_price = 0
+sum_convexity = 0
+For i = 1 To maturity
+If i = maturity Then
+sum_price = sum_price + face_value * (1 + coupon) / (1 + yield) ^ i
+sum_convexity = sum_convexity + face_value * i * (1 + i) * (1 + coupon) / (1 + yield) ^ i
+Else
+sum_price = sum_price + face_value * coupon / (1 + yield) ^ i
+sum_convexity = sum_convexity + face_value * i * (1 + i) * (coupon) / (1 + yield) ^ i
+End If
+Next i
+convexity = sum_convexity / (sum_price * (1 + yeild) ^ 2)
+MsgBox ("THE DURATION OF THE convexity IS " & Format(convexity, "###.###"))
+End Sub
